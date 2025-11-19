@@ -76,67 +76,78 @@ h1{
   box-shadow:0 0 28px rgba(0,255,255,0.55);
 }
 
-.hex-title{
-  font-size:18px;
-  color:var(--cyan);
-  text-shadow:0 0 10px var(--cyan);
-  margin-bottom:6px;
-}
-
-.price{
-  font-size:24px;
-  margin:5px 0;
-  color:var(--teal);
-}
-
-/* BADGE */
-.status{
+.hex-card-header{
+  font-size:20px;
   font-weight:700;
-  padding:4px 10px;
-  border-radius:8px;
-  display:inline-block;
   margin-bottom:6px;
 }
-.buy{ background:rgba(0,255,100,0.2); color:var(--green); }
-.hold{ background:rgba(255,180,0,0.18); color:var(--amber); }
-.wait{ background:rgba(255,80,80,0.18); color:var(--red); }
 
-/* NAV Discount Bar */
-.nav-bar{
+.hex-card-body h3{
+  font-size:15px;
+  margin:4px 0 10px 0;
+  color:#fff;
+}
+
+.hex-card-body p{
+  margin:3px 0;
+  font-size:13px;
+}
+
+.mini-bar{
   width:100%;
   height:8px;
   background:rgba(255,255,255,0.12);
-  border-radius:10px;
+  border-radius:8px;
+  margin-top:10px;
   overflow:hidden;
-  margin-top:8px;
 }
-.nav-fill{
+.mini-fill{
   height:100%;
+  background:linear-gradient(90deg,var(--cyan),var(--teal));
   width:0%;
-  background:linear-gradient(90deg, var(--cyan), var(--teal));
-  box-shadow:0 0 10px var(--cyan);
+  transition:1s ease;
 }
-
-/* Metric line */
-.metric{
-  font-size:13px;
-  opacity:0.85;
-  margin-top:4px;
+.mini-label{
+  font-size:12px;
+  opacity:0.75;
+  margin-top:3px;
 }
 </style>
 
 <script>
-// Correct JSON URL
-const WATCHLIST_JSON =
-  "https://webbchrisuk-max.github.io/watchlist.json";
+/* =====================================================
+   LOAD JSON FROM GITHUB PAGES
+   ===================================================== */
+const WATCHLIST_URL = "https://webbchrisuk-max.github.io/watchlist.json";
 
-// Load JSON helper
 async function loadJSON(url){
   const r = await fetch(url + "?nocache=" + Date.now());
   return await r.json();
 }
 
-/* ================== RENDER CARDS ================== */
+async function initWatchlist(){
+  const data = await loadJSON(WATCHLIST_URL);
+  renderWatchlist(data);
+}
+</script>
+
+</head>
+
+<body onload="initWatchlist()">
+
+<div class="container">
+
+  <h1 class="page-title">🚀 Aurora Watchlist – Hex Cinematic Edition</h1>
+
+  <!-- ================= HEX GRID ================= -->
+  <div class="hex-grid" id="watchlist-grid"></div>
+
+</div>
+
+<script>
+/* ============================================================
+   RENDER WATCHLIST CARDS
+   ============================================================ */
 function renderWatchlist(data){
   const grid = document.getElementById("watchlist-grid");
   grid.innerHTML = "";
@@ -149,8 +160,12 @@ function renderWatchlist(data){
       item.Status?.includes("NO") ? "#ff0033" :
       "#ccc";
 
+    const pos = Number(item["52W Position %"] || 0);
+    const posPercent = Math.max(0, Math.min(100, pos));
+
     grid.innerHTML += `
       <div class="hex-card">
+
         <div class="hex-card-header" style="color:${statusColor}">
           ${item.ticker || "?"}
         </div>
@@ -166,21 +181,15 @@ function renderWatchlist(data){
           <p><strong>Buy Strength:</strong> ${item["Buy Strength"] || "-"}</p>
 
           <div class="mini-bar">
-            <div class="mini-fill" style="--p:${item["52W Position %"] || 0}"></div>
+            <div class="mini-fill" style="width:${posPercent}%;"></div>
           </div>
           <p class="mini-label">52W Range Position</p>
         </div>
+
       </div>
     `;
   });
 }
-
-/* ================== INIT ================== */
-async function initWatchlist(){
-  const watchlist = await loadJSON(WATCHLIST_JSON);
-  renderWatchlist(watchlist);
-}
-
 </script>
 
 </body>
