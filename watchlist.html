@@ -127,10 +127,10 @@ h1{
 
 <script>
 // LOAD WATCHLIST.JSON
-const WATCHLIST_URL =
-"https://raw.githubusercontent.com/webbchrisuk-max/Aurora/refs/heads/main/watchlist.json";
-
-async function loadJSON(url){
+const WATCHLIST_JSON =
+"https://webbchrisuk-max.github.io/watchlist.json";
+  
+  async function loadJSON(url){
   const r = await fetch(url + "?nocache=" + Date.now());
   return await r.json();
 }
