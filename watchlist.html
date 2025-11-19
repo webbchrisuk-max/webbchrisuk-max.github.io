@@ -126,37 +126,17 @@ h1{
 </style>
 
 <script>
-// LOAD WATCHLIST.JSON
+// Correct JSON URL
 const WATCHLIST_JSON =
-"https://webbchrisuk-max.github.io/watchlist.json";
-  
-  async function loadJSON(url){
+  "https://webbchrisuk-max.github.io/watchlist.json";
+
+// Load JSON helper
+async function loadJSON(url){
   const r = await fetch(url + "?nocache=" + Date.now());
   return await r.json();
 }
 
-async function initAuroraWatchlist(){
-  const data = await loadJSON(WATCHLIST_URL);
-  renderWatchlist(data);
-}
-</script>
-</head>
-<body onload="initWatchlist()">
-
-<div class="container">
-
-  <h1 class="page-title">🚀 Aurora Watchlist – Hex Cinematic Edition</h1>
-
-  <!-- ===================== GRID WRAPPER ===================== -->
-  <div class="grid" id="watchlist-grid"></div>
-
-</div>
-
-
-<script>
-/* ============================================================
-   RENDER WATCHLIST CARDS
-   ============================================================ */
+/* ================== RENDER CARDS ================== */
 function renderWatchlist(data){
   const grid = document.getElementById("watchlist-grid");
   grid.innerHTML = "";
@@ -195,14 +175,12 @@ function renderWatchlist(data){
   });
 }
 
-
-/* ============================================================
-   INIT
-   ============================================================ */
+/* ================== INIT ================== */
 async function initWatchlist(){
-  const watchlist = await loadJSON(AURORA_WATCHLIST);
+  const watchlist = await loadJSON(WATCHLIST_JSON);
   renderWatchlist(watchlist);
 }
+
 </script>
 
 </body>
