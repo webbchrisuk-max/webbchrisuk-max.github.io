@@ -116,10 +116,10 @@ h1{
 
 <script>
 /* =====================================================
-   LOAD JSON FROM GITHUB PAGES
+   ALWAYS use unified master JSON (LOCKED IN FOREVER)
    ===================================================== */
 const WATCHLIST_URL =
-"https://webbchrisuk-max.github.io/watchlist_master.json";
+  "https://raw.githubusercontent.com/webbchrisuk-max/Aurora/main/watchlist_master.json";
 
 async function loadJSON(url){
   const r = await fetch(url + "?nocache=" + Date.now());
@@ -147,7 +147,7 @@ async function initWatchlist(){
 
 <script>
 /* ============================================================
-   RENDER WATCHLIST CARDS
+   RENDER WATCHLIST CARDS (fixed for your new JSON shape)
    ============================================================ */
 function renderWatchlist(data){
   const grid = document.getElementById("watchlist-grid");
@@ -155,7 +155,6 @@ function renderWatchlist(data){
 
   data.forEach(item => {
 
-    // Status colour logic
     const statusColor =
       item.Status?.includes("BUY") ? "#00ffea" :
       item.Status?.includes("HOLD") ? "#ffaa00" :
@@ -163,42 +162,28 @@ function renderWatchlist(data){
       item.Status?.includes("NO") ? "#ff0033" :
       "#ccc";
 
-    // 52-week position (converted safely)
+    const live = Number(item.liveprice || item.live_price || 0);
+    const fair = item.fairvalue || item.fair_value || "-";
+
     const pos = Number(item["52W Position %"] || 0);
     const posPercent = Math.max(0, Math.min(100, pos));
-
-    // Holdings section (if available)
-    const h = item.holdings || {};
-
-    const holdingsHTML = h.shares ? `
-      <p><strong>Shares:</strong> ${h.shares}</p>
-      <p><strong>Book Cost:</strong> £${Number(h.book_cost || 0).toFixed(2)}</p>
-      <p><strong>Annual DPS:</strong> ${h.annual_dps || "-"}</p>
-      <p><strong>Sector:</strong> ${h.sector || "-"}</p>
-    ` : `<p style="opacity:0.6;">No holdings data</p>`;
-
-    // Live price and fair value updated to match master JSON
-    const livePrice = Number(item.liveprice || 0).toFixed(4);
-    const fv = item.fairvalue || "-";
 
     grid.innerHTML += `
       <div class="hex-card">
 
         <div class="hex-card-header" style="color:${statusColor}">
-          ${item.ticker || "?"}
+          ${item.ticker}
         </div>
 
         <div class="hex-card-body">
-          <h3>${item.company || ""}</h3>
+          <h3>${item.company}</h3>
 
-          <p><strong>Live Price:</strong> £${livePrice}</p>
-          <p><strong>Fair Value:</strong> ${fv}</p>
-          <p><strong>Status:</strong> ${item.Status || "-"}</p>
+          <p><strong>Live Price:</strong> £${live.toFixed(4)}</p>
+          <p><strong>Fair Value:</strong> ${fair}</p>
+          <p><strong>Status:</strong> ${item.Status}</p>
 
-          <p><strong>Discount %:</strong> ${item["Discount %"] || "-"}</p>
-          <p><strong>Buy Strength:</strong> ${item["Buy Strength"] || "-"}</p>
-
-          ${holdingsHTML}
+          <p><strong>Discount %:</strong> ${item["Discount %"]}</p>
+          <p><strong>Buy Strength:</strong> ${item["Buy Strength"]}</p>
 
           <div class="mini-bar">
             <div class="mini-fill" style="width:${posPercent}%;"></div>
